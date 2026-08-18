@@ -1,0 +1,63 @@
+# --- Core web / API ---
+fastapi==0.141.1
+uvicorn[standard]==0.32.1
+python-multipart==0.0.17
+pydantic>=2.11.9,<2.13          # crewai 1.15.x requires pydantic>=2.11.9,<2.13
+pydantic-settings>=2.14.2,<3    # crewai 1.15.x requires pydantic-settings>=2.14.2
+
+# --- Orchestration ---
+langgraph==1.2.11              # pulls in a compatible langchain-core automatically — do not pin langchain-core separately, see note below
+crewai==1.15.16
+anthropic==0.69.0             # required for CrewAI's native Anthropic provider (AGENT_LLM_PROVIDER=anthropic)
+# Note: the separate `crewai-tools` package is NOT installed here — this project's
+# ReAct tools (app/agents/tools.py) use the `@tool` decorator built into the core
+# `crewai` package (`crewai.tools.tool`), not `crewai_tools`. Version 0.17.0 of
+# crewai-tools also turned out to pull in `embedchain`, which pins an old chromadb
+# version incompatible with crewai 1.15.x's own chromadb~=1.1.0 requirement — one
+# more reason to leave it out rather than fight that conflict for a package we don't
+# actually import anywhere.
+
+# --- Vision-Language Model client (works WITHOUT a local GPU) ---
+huggingface-hub==0.26.5       # HF Inference API backend for QwenVLModel/LLaVAModel (backend="hf-inference")
+pillow==11.0.0
+
+# --- OCR fallback ---
+pytesseract==0.3.13           # requires the tesseract-ocr system package (installed in Docker image)
+
+# --- PDF / document processing ---
+pymupdf==1.25.1               # fitz — PDF -> page images, page metadata
+
+# --- Database ---
+sqlalchemy==2.0.36
+alembic==1.14.0
+psycopg2-binary==2.9.10
+cryptography==44.0.0          # application-level encryption for account numbers at rest
+
+# --- Frontend ---
+streamlit==1.61.1
+requests==2.32.3
+pandas==2.2.3
+
+# --- Config / logging / utils ---
+pyyaml==6.0.2
+python-dotenv>=1.2.2,<2         # crewai 1.15.x requires python-dotenv>=1.2.2
+structlog==24.4.0
+tenacity==9.0.0               # retry/backoff for VLM and DB calls
+
+# ------------------------------------------------------------------
+# NOT included here: torch, transformers, accelerate, bitsandbytes,
+# qwen-vl-utils. Those are LOCAL GPU inference dependencies, needed only
+# if MODEL_PROVIDER=qwen-vl or MODEL_PROVIDER=llava with backend="local".
+# See requirements-local-inference.txt.
+#
+# This split is possible (not just a size optimization) because
+# app/extraction/qwen_vl_model.py and llava_model.py both import torch/
+# transformers LAZILY, inside _load_local_model() — importing those
+# modules, and using the default MODEL_PROVIDER=hf-inference backend,
+# works with zero torch/CUDA dependency, which is what keeps the default
+# Docker image (Dockerfile) small and CPU-only.
+#
+# Also NOT included here: pytest and other dev/test-only packages —
+# see requirements-dev.txt. Production images (Dockerfile) install only
+# this file; local development and CI install both.
+# ------------------------------------------------------------------

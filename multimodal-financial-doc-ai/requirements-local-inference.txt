@@ -1,0 +1,26 @@
+# ------------------------------------------------------------------
+# Optional: local GPU inference for Qwen2-VL / LLaVA.
+#
+# Install this ON TOP OF requirements.txt only if you're running
+# MODEL_PROVIDER=qwen-vl or MODEL_PROVIDER=llava with a local GPU:
+#
+#   pip install -r requirements.txt -r requirements-local-inference.txt
+#
+# Hardware requirements (stated plainly — see ARCHITECTURE.md and
+# app/extraction/qwen_vl_model.py / llava_model.py for the full breakdown):
+#   - Qwen2-VL-7B-Instruct, bf16:        ~16GB VRAM
+#   - Qwen2-VL-7B-Instruct, 4-bit:       ~6-7GB VRAM  (MODEL_LOAD_IN_4BIT=true)
+#   - llava-v1.6-mistral-7b, bf16:       ~15-16GB VRAM
+#   - llava-v1.6-mistral-7b, 4-bit:      ~7-8GB VRAM
+#   - CPU-only: not practical beyond a single-page smoke test.
+#
+# If you don't have a GPU meeting these requirements, leave MODEL_PROVIDER
+# at its default (hf-inference) — no local GPU needed, requirements.txt
+# alone is sufficient.
+# ------------------------------------------------------------------
+
+torch==2.5.1
+transformers==4.46.3
+accelerate==1.2.1
+bitsandbytes==0.45.0          # 4-bit quantization
+qwen-vl-utils==0.0.10         # official Qwen2-VL image/video preprocessing helpers

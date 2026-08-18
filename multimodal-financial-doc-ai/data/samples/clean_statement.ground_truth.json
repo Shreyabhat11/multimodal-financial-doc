@@ -1,0 +1,26 @@
+{
+  "account_holder": "Jane Doe",
+  "account_number": "9988776655",
+  "bank_name": "First National",
+  "opening_balance": 1000.0,
+  "closing_balance": 1300.0,
+  "currency": "USD",
+  "statement_period": {
+    "start_date": "2024-01-01",
+    "end_date": "2024-01-31"
+  },
+  "transactions": [
+    {
+      "date": "2024-01-05",
+      "description": "Salary",
+      "debit": 0,
+      "credit": 500.0
+    },
+    {
+      "date": "2024-01-10",
+      "description": "Groceries",
+      "debit": 200.0,
+      "credit": 0
+    }
+  ]
+}

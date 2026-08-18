@@ -1,0 +1,32 @@
+{
+  "account_holder": "Bob Smith",
+  "account_number": "1122334455",
+  "bank_name": "Second Trust",
+  "opening_balance": 2000.0,
+  "closing_balance": 1464.5,
+  "currency": "USD",
+  "statement_period": {
+    "start_date": "2024-02-01",
+    "end_date": "2024-02-29"
+  },
+  "transactions": [
+    {
+      "date": "2024-02-03",
+      "description": "Freelance Payment",
+      "debit": 0,
+      "credit": 750.0
+    },
+    {
+      "date": "2024-02-14",
+      "description": "Rent",
+      "debit": 1200.0,
+      "credit": 0
+    },
+    {
+      "date": "2024-02-20",
+      "description": "Utilities",
+      "debit": 85.5,
+      "credit": 0
+    }
+  ]
+}

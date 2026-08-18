@@ -1,0 +1,62 @@
+# ============================================================
+# Non-secret application configuration.
+# Values here are DEFAULTS. Anything set as an environment variable
+# (see .env.example) overrides the corresponding value here.
+# Keep secrets (API keys, DB passwords) OUT of this file.
+# ============================================================
+
+app:
+  name: "multimodal-financial-doc-ai"
+  version: "0.1.0"
+
+vision_model:
+  provider: "hf-inference"        # qwen-vl | llava | hf-inference
+  qwen_model_name: "Qwen/Qwen2-VL-7B-Instruct"
+  llava_model_name: "llava-hf/llava-v1.6-mistral-7b-hf"
+  load_in_4bit: true
+  max_new_tokens: 2048
+  temperature: 0.1                 # low temperature: extraction should be near-deterministic
+
+ocr_fallback:
+  enabled: true
+  engine: "tesseract"
+  trigger_confidence_below: 0.6    # per-page confidence that triggers OCR fallback
+
+document_processing:
+  max_file_size_mb: 25
+  max_pages: 50
+  page_render_dpi: 200
+  supported_extensions: [".pdf"]
+  vlm_request_timeout_seconds: 90
+  vlm_max_retries: 3
+  retry_backoff_seconds: 2.0
+
+validation:
+  confidence_threshold: 0.75       # document-level threshold for auto-approval
+  balance_tolerance: 0.01          # currency-unit slack for reconciliation
+  large_transaction_multiplier: 5  # flag transactions > N * median as anomalies
+  human_review_on_validation_failure: true
+
+confidence_weights:
+  # Field-level confidence is aggregated into a document-level score using these weights.
+  # Must sum to 1.0 - validated at startup.
+  account_number: 0.20
+  statement_period: 0.15
+  opening_balance: 0.15
+  closing_balance: 0.15
+  transactions: 0.35
+
+crew:
+  process: "sequential"            # sequential | hierarchical
+  max_iterations: 5
+  verbose: false                   # keep false in production — avoid leaking reasoning traces
+
+logging:
+  format: "json"
+  mask_account_numbers: true
+  mask_keep_last_n_digits: 4
+
+api:
+  cors_origins:
+    - "http://localhost:8501"
+  request_timeout_seconds: 120

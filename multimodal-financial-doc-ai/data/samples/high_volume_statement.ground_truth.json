@@ -1,0 +1,110 @@
+{
+  "account_holder": "Carla Nguyen",
+  "account_number": "6677889900",
+  "bank_name": "Third Community Bank",
+  "opening_balance": 500.0,
+  "closing_balance": 2730.0,
+  "currency": "USD",
+  "statement_period": {
+    "start_date": "2024-03-01",
+    "end_date": "2024-03-31"
+  },
+  "transactions": [
+    {
+      "date": "2024-03-01",
+      "description": "Purchase 1",
+      "debit": 11.0,
+      "credit": 0
+    },
+    {
+      "date": "2024-03-02",
+      "description": "Purchase 2",
+      "debit": 12.0,
+      "credit": 0
+    },
+    {
+      "date": "2024-03-03",
+      "description": "Purchase 3",
+      "debit": 13.0,
+      "credit": 0
+    },
+    {
+      "date": "2024-03-04",
+      "description": "Purchase 4",
+      "debit": 14.0,
+      "credit": 0
+    },
+    {
+      "date": "2024-03-05",
+      "description": "Purchase 5",
+      "debit": 15.0,
+      "credit": 0
+    },
+    {
+      "date": "2024-03-06",
+      "description": "Purchase 6",
+      "debit": 16.0,
+      "credit": 0
+    },
+    {
+      "date": "2024-03-07",
+      "description": "Purchase 7",
+      "debit": 17.0,
+      "credit": 0
+    },
+    {
+      "date": "2024-03-08",
+      "description": "Purchase 8",
+      "debit": 18.0,
+      "credit": 0
+    },
+    {
+      "date": "2024-03-09",
+      "description": "Purchase 9",
+      "debit": 19.0,
+      "credit": 0
+    },
+    {
+      "date": "2024-03-10",
+      "description": "Purchase 10",
+      "debit": 20.0,
+      "credit": 0
+    },
+    {
+      "date": "2024-03-11",
+      "description": "Purchase 11",
+      "debit": 21.0,
+      "credit": 0
+    },
+    {
+      "date": "2024-03-12",
+      "description": "Purchase 12",
+      "debit": 22.0,
+      "credit": 0
+    },
+    {
+      "date": "2024-03-13",
+      "description": "Purchase 13",
+      "debit": 23.0,
+      "credit": 0
+    },
+    {
+      "date": "2024-03-14",
+      "description": "Purchase 14",
+      "debit": 24.0,
+      "credit": 0
+    },
+    {
+      "date": "2024-03-15",
+      "description": "Purchase 15",
+      "debit": 25.0,
+      "credit": 0
+    },
+    {
+      "date": "2024-03-28",
+      "description": "Paycheck",
+      "debit": 0,
+      "credit": 2500.0
+    }
+  ]
+}

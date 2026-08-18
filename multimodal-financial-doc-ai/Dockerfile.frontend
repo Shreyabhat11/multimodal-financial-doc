@@ -1,0 +1,41 @@
+# syntax=docker/dockerfile:1
+# ============================================================
+# Streamlit frontend image.
+#
+# Reuses requirements.txt rather than a fourth requirements file — the frontend
+# only actually needs streamlit/requests/pandas plus app.document_processing (for
+# local page-preview rendering, see frontend/streamlit_app.py), all of which are
+# already in requirements.txt. The pragmatic trade-off is a somewhat larger image
+# than a hand-trimmed frontend-only requirements file would produce (it also pulls
+# in FastAPI/SQLAlchemy/CrewAI, unused here) — acceptable for a portfolio project;
+# a real production split would give the frontend its own minimal requirements file.
+# ============================================================
+
+FROM python:3.11-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgl1 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt ./
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
+
+COPY app/document_processing/ ./app/document_processing/
+COPY app/core/ ./app/core/
+COPY app/__init__.py ./app/__init__.py
+COPY frontend/ ./frontend/
+COPY configs/ ./configs/
+
+RUN useradd --create-home --uid 1000 appuser && chown -R appuser:appuser /app
+USER appuser
+
+EXPOSE 8501
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:8501/_stcore/health || exit 1
+
+CMD ["streamlit", "run", "frontend/streamlit_app.py", "--server.address=0.0.0.0", "--server.port=8501", "--browser.gatherUsageStats=false"]

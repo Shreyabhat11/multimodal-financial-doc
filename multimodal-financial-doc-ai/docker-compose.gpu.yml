@@ -1,0 +1,29 @@
+# Optional override enabling local GPU inference for the API service.
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.gpu.yml up --build
+#
+# Requires:
+#   - An NVIDIA GPU meeting the VRAM requirements in requirements-local-inference.txt
+#   - The NVIDIA Container Toolkit installed on the Docker host
+#     (https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
+#   - Building the API image with local-inference deps included:
+#       docker compose -f docker-compose.yml -f docker-compose.gpu.yml build \
+#         --build-arg INSTALL_LOCAL_INFERENCE=true api
+#   - Setting MODEL_PROVIDER=qwen-vl (or llava) and MODEL_DEVICE=cuda in .env
+#
+# Without this override, the API service runs CPU-only with no GPU access, which is
+# correct and sufficient for the default MODEL_PROVIDER=hf-inference configuration.
+
+services:
+  api:
+    build:
+      args:
+        INSTALL_LOCAL_INFERENCE: "true"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
