@@ -85,3 +85,31 @@ Every fix was verified by re-running a full fresh-venv `pip install` (exit code 
 complete 81-test pytest suite passing. This is the value of testing dependency
 resolution in a genuinely clean environment, not just the one you've been
 incrementally developing in — it catches exactly this class of bug.
+
+## Post-delivery fix: `API_CORS_ORIGINS` crashed `alembic upgrade head` / any startup
+
+A user running this project for real (Windows, `alembic upgrade head`) hit a genuine
+bug: `pydantic-settings`' env/dotenv source auto-JSON-decodes any `list[...]`-typed
+field read from an environment variable **before** any custom `field_validator`
+runs. `.env.example` ships `API_CORS_ORIGINS=http://localhost:8501` — a plain
+string, not JSON — which crashed with `SettingsError` at `Settings()` construction
+time, breaking every entry point that imports `app.core.config` (uvicorn, Alembic,
+pytest itself, since none of it had been exercised with a real `.env` file
+containing that exact line before).
+
+**Fix**: annotated `api_cors_origins` with `pydantic_settings.NoDecode`, which
+disables the automatic JSON-decoding for that field specifically so the raw string
+reaches our own comma-split validator instead. Verified by:
+- Reproducing the exact failure with a `.env` file matching `.env.example`'s line
+- Confirming the fix resolves it
+- Testing the comma-separated-multiple-origins case and the no-env-var-set default
+  case both still work correctly
+- Re-running the **exact** `alembic upgrade head` command from the bug report —
+  now succeeds, creates all 8 tables
+- Adding `tests/unit/test_config.py` (7 new tests) as a permanent regression guard,
+  bringing the suite to **88 tests, all passing**
+
+This is a good example of a class of bug that's easy to miss in development: the
+long-lived interactive dev environment never happened to construct `Settings()`
+against a real `.env` file with that exact non-JSON `API_CORS_ORIGINS` value, so it
+went undetected until a real user's first `alembic upgrade head` run.

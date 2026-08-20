@@ -19,11 +19,11 @@ from __future__ import annotations
 
 import functools
 from pathlib import Path
-from typing import Literal
+from typing import Annotated, Literal
 
 import yaml
 from pydantic import Field, field_validator, model_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 CONFIG_YAML_PATH = PROJECT_ROOT / "configs" / "config.yaml"
@@ -176,7 +176,16 @@ class Settings(BaseSettings):
     # --- API ---
     api_host: str = Field(default="0.0.0.0")
     api_port: int = Field(default=8000, gt=0, lt=65536)
-    api_cors_origins: list[str] = Field(
+    # Annotated with NoDecode: pydantic-settings' env/dotenv source auto-JSON-decodes
+    # any list/dict/set-typed field read from an environment variable BEFORE our own
+    # field_validator ever sees it — so a plain, non-JSON value like
+    # "http://localhost:8501" (exactly what .env.example ships) raises a
+    # SettingsError at the source level, never reaching `_split_csv_origins` below.
+    # NoDecode disables that automatic decoding for this field specifically, so the
+    # raw string is handed to our validator instead, which does the (correct, simple)
+    # comma-split itself. Without this annotation, `alembic upgrade head` / anything
+    # that imports app.core.config fails immediately on startup.
+    api_cors_origins: Annotated[list[str], NoDecode] = Field(
         default_factory=lambda: _yaml_get("api", "cors_origins", default=["http://localhost:8501"])
     )
 
